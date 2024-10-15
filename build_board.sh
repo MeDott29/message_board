@@ -18,7 +18,7 @@ if ! command_exists npm; then
 fi
 
 # Create project directory
-PROJECT_DIR="message-board"
+PROJECT_DIR="."
 mkdir -p $PROJECT_DIR/public
 cd $PROJECT_DIR || exit
 
