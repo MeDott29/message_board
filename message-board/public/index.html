@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Message Board</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .message-board {
+            max-width: 600px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .message {
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="message-board">
+        <h1>Message Board</h1>
+        
+        <div id="messages">
+            <!-- Messages will be loaded here -->
+        </div>
+        
+        <form id="messageForm">
+            <textarea id="messageText" placeholder="Write your message..."></textarea>
+            <button type="submit" id="submitBtn">Post Message</button>
+        </form>
+    </div>
+
+    <script>
+        async function fetchMessages() {
+            const response = await fetch('/messages');
+            const messages = await response.json();
+
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = ''; // Clear existing messages
+
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+                messageDiv.textContent = message.content;
+                messagesDiv.appendChild(messageDiv);
+            });
+        }
+
+        async function postMessage(content) {
+            await fetch('/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content }),
+            });
+
+            fetchMessages(); // Reload messages
+        }
+
+        document.getElementById('messageForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const messageText = document.getElementById('messageText').value;
+
+            if (messageText.trim()) {
+                postMessage(messageText);
+                document.getElementById('messageText').value = ''; // Clear input field
+            }
+        });
+
+        // Load messages when the page loads
+        fetchMessages();
+    </script>
+</body>
+</html>
